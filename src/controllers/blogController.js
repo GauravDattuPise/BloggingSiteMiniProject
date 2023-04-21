@@ -45,7 +45,6 @@ const createBlog = async function (req, res) {
     }
 }
 
-module.exports.createBlog = createBlog
 
 //===============================================================================================================
 
@@ -94,7 +93,6 @@ const getBlogs = async function (req, res) {
     }
 }
 
-module.exports.getBlogs = getBlogs
 
 //================================================================================================================
 
@@ -121,7 +119,7 @@ const updateBlog = async function (req, res) {
             return res.status(400).send({ status: false, message: "format of blogId is invalid" })
 
         // checking blog is exists or not
-        const isBlogExists = await blogModel.findById(blogId)
+        const isBlogExists = await blogModel.findOne({ _id: blogId, isDeleted: false })
         if (!isBlogExists)
             return res.status(404).send({ status: false, message: "No such blog found" })
 
@@ -139,9 +137,6 @@ const updateBlog = async function (req, res) {
             { new: true }
         );
 
-        // if (!updatedBlog)
-        //     return res.status(404).send({ status: false, message: "No blog found to update" })
-
         return res.status(200).send({ status: true, data: updatedBlog })
     }
     catch (err) {
@@ -149,7 +144,6 @@ const updateBlog = async function (req, res) {
     }
 }
 
-module.exports.updateBlog = updateBlog
 
 //===============================================================================================================
 
@@ -162,9 +156,6 @@ const deleteBlog = async function (req, res) {
 
     try {
         const blogId = req.params.blogId
-
-        if(!blogId)
-        return res.status(400).send({ status: false, message: "blogId is required" })
 
         if (!mongoose.isValidObjectId(blogId))
             return res.status(400).send({ status: false, message: "Please provide valid blogId" })
@@ -179,7 +170,7 @@ const deleteBlog = async function (req, res) {
         )
 
         if (blogDeletion)
-            return res.status(200).send();
+            return res.status(200).send({ status: true, message: "blog deleted succefully" });
 
         return res.status(400).send({ status: false, message: "blog already deleted (path Params)" })
     }
@@ -188,7 +179,6 @@ const deleteBlog = async function (req, res) {
     }
 }
 
-module.exports.deleteBlog = deleteBlog
 
 //===============================================================================================================
 
@@ -212,7 +202,7 @@ const deleteByQueryP = async function (req, res) {
         data.isDeleted = false
         const findBlog = await blogModel.updateMany(data, { $set: { isDeleted: true, deletedAt: Date.now() } })
         const count = findBlog.modifiedCount
-      //  console.log(count)
+        //  console.log(count)
         if (count != 0)
             return res.status(200).send({ status: true, data: `${count} blog is deleted` })
 
@@ -223,4 +213,4 @@ const deleteByQueryP = async function (req, res) {
     }
 }
 
-module.exports.deleteByQueryP = deleteByQueryP
+module.exports = { createBlog, getBlogs, updateBlog, updateBlog, deleteBlog, deleteByQueryP }

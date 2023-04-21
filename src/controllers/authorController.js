@@ -1,8 +1,8 @@
-//  fname,lname,title,enum,email,password
+
 const jwt = require('jsonwebtoken')
 const authorModel = require('../models/authorModel');
 const validtion = require('../validation/validation')
-
+ 
 const createAuthor = async (req, res) => {
 
     try {
@@ -42,7 +42,7 @@ const createAuthor = async (req, res) => {
         if (!validtion.emailValidation(email))
             return res.status(400).send({ status: false, message: "Email should be like this - abc123@gmail.com" })
 
-        let findEmail = await authorModel.findOne({ email })
+        let findEmail = await authorModel.findOne({ email  })
         if (findEmail)
             return res.status(400).send({ status: false, message: 'This email is already exists' })
 
@@ -61,7 +61,6 @@ const createAuthor = async (req, res) => {
     }
 }
 
-module.exports.createAuthor = createAuthor
 
 //========================================================================================
 
@@ -94,4 +93,4 @@ const login = async function (req, res) {
     }
 }
 
-module.exports.login = login
+module.exports = {createAuthor, login}
