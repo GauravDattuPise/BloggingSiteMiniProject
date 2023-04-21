@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const {createAuthor,login} = require('../controllers/createAuthor');
-const {createBlog,getBlogs,updateBlog,updateBlog,deleteBlog,deleteByQueryP} = require('../controllers/blogController');
+const {createAuthor,login} = require('../controllers/authorController');
+const {createBlog,getBlogs,updateBlog,deleteBlog,deleteByQueryP} = require('../controllers/blogController');
 const {authentication,authorisation} = require('../middleware/middleware')
 
 
