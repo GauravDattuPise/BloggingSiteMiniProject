@@ -1,6 +1,5 @@
-// Author Model
-// { fname: { mandatory}, lname: {mandatory}, title: {mandatory, enum[Mr, Mrs, Miss]},
-//  email: {mandatory, valid email, unique}, password: {mandatory} }
+
+//  Created Schema for user
 
 const mongoose = require('mongoose')
 

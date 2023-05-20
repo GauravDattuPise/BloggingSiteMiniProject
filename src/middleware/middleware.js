@@ -9,6 +9,8 @@
 
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose')
+
+
 const blogModel = require('../models/blogModel');
 
 const authentication = async function (req, res, next) {
@@ -19,7 +21,7 @@ const authentication = async function (req, res, next) {
         if (!token)
             return res.status(400).send({ status: false, message: "Token is mandatory" });
 
-        jwt.verify(token, 'projectOneFromScratch', (err, decodedToken) => { 
+        jwt.verify(token, process.env.SECRETKEY, (err, decodedToken) => { 
 
             if (err)
                 return res.status(400).send({ status: false, message: "Token is invalid" })

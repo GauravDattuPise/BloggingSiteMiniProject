@@ -84,7 +84,7 @@ const login = async function (req, res) {
         if (!findUser)
             return res.status(400).send({ status: false, message: "Email or password is incorrect" })
 
-        const token = jwt.sign({ user: findUser._id }, "projectOneFromScratch");
+        const token = jwt.sign({ user: findUser._id }, process.env.SECRETKEY);
 
         return res.status(200).send({ status: true, data: token })
     }

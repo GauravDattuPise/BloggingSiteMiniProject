@@ -1,14 +1,16 @@
 {
   "name": "pro1practice",
   "version": "1.0.0",
-  "description": "Project 1 from scratch",
+  "description": "Blogging Site Mini Project from scratch",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start" : "npx nodemon src/index.js"
   },
   "author": "Gaurav Pise",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "index": "^0.4.0",
     "jsonwebtoken": "^9.0.0",

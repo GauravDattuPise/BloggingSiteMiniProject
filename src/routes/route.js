@@ -19,7 +19,7 @@ router.post('/blogs', authentication,createBlog)
 router.get("/blogs", authentication,getBlogs)
 
 // UPDATE BLOGS
-router.put("/blogs/:blogId",authentication,authorisation, updateBlog)
+router.patch("/blogs/:blogId",authentication,authorisation, updateBlog)
 
 // DELETE BLOGS BY ID
 router.delete("/blogs/:blogId",authentication,authorisation,deleteBlog)

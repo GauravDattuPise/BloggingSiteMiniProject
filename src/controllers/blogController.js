@@ -1,13 +1,9 @@
-// Create a blog document from request body. Get authorId in request body only.
-// Make sure the authorId is a valid authorId by checking the author exist in the authors collection.
-// Return HTTP status 201 on a succesful blog creation. Also return the blog document.
 
 const mongoose = require('mongoose')
 const authorModel = require('../models/authorModel');
 const blogModel = require("../models/blogModel");
 
-//===========================================================================================================
-
+// For creating blog, taking authorId from user, and checking authorId exists in database or not.
 const createBlog = async function (req, res) {
 
     try {
@@ -16,28 +12,37 @@ const createBlog = async function (req, res) {
         if (Object.keys(data).length == 0)
             return res.status(400).send({ status: false, message: "Please enter some data" });
 
+        // destructuring from data object
         let { title, body, authorId, category } = data
 
-        if (!title)
+        if (!title) {
             return res.status(400).send({ status: false, message: "please provide title" })
-
-        if (!body)
+        }
+        if (!body) {
             return res.status(400).send({ status: false, message: "please provide body" })
-
-        if (!authorId)
+        }
+        if (!authorId) {
             return res.status(400).send({ status: false, message: "please provide authorId" })
-
-        if (!category)
+        }
+        if (!category) {
             return res.status(400).send({ status: false, message: "please provide category" })
+        }
 
-        if (!mongoose.isValidObjectId(authorId))
+        //checking autorId is valid ObjectId or not
+        if (!mongoose.isValidObjectId(authorId)) {
             return res.status(400).send({ status: false, message: "please provide valid format authorId" })
+        }
 
+        //checking authorID exists or not
         const findAuthor = await authorModel.findById(authorId);
-        if (!findAuthor)
+        if (!findAuthor) {
             return res.status(404).send({ status: false, message: "This author is not exists" })
+        }
 
+        // saving author details into database
         const createdBlog = await blogModel.create(data);
+
+        // sending created blog in response
         return res.status(201).send({ status: true, data: createdBlog })
     }
     catch (err) {
@@ -58,33 +63,45 @@ const createBlog = async function (req, res) {
 // List of blogs that have a specific tag
 // List of blogs that have a specific subcategory example of a query url: blogs?filtername=filtervalue&f2=fv2
 
+
+// getting blogs by providing some conditions
+
 const getBlogs = async function (req, res) {
 
     try {
 
         const qparams = req.query
 
+        // if any query is not given,
+        // then return the blogs which are published and not deleted
         if (Object.keys(qparams).length == 0) {
             const findBlogs = await blogModel.find({ isDeleted: false, isPublished: true });
 
-            if (findBlogs.length == 0) {
+            if (findBlogs.length === 0) {
                 return res.status(404).send({ status: false, message: "No such blog found" })
             }
             return res.status(200).send({ status: true, data: findBlogs })
         }
+
         else {
+            // adding key and values pairs in qparams object
             qparams.isDeleted = false
             qparams.isPublished = true
 
             let { authorId, tags, category, subcategory } = qparams
+
+            // If none of the following keys not in qparams
             if (!(authorId || tags || category || subcategory)) {
                 return res.status(400).send({ status: false, message: "Key should be in (authorID/tags/category/subcategory)" })
             }
 
+            // checking blogs exists or not using qparams conditions
             const findBlogs = await blogModel.find(qparams)
             if (findBlogs.length == 0) {
                 return res.status(404).send({ status: false, message: "No such blog found" })
             }
+
+            // If blogs are available then send blogs in response
             return res.status(200).send({ status: true, data: findBlogs })
         }
     }
