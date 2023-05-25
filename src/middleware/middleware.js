@@ -16,16 +16,22 @@ const blogModel = require('../models/blogModel');
 const authentication = async function (req, res, next) {
 
     try {
+        // getting token from headers
         const token = req.headers['x-api-key'];
 
-        if (!token)
+        console.log(process.env.SECRETKEY);
+
+        if (!token) {
             return res.status(400).send({ status: false, message: "Token is mandatory" });
+        }
+        // veryfying token using by checking token with secret-key
+        jwt.verify(token, process.env.SECRETKEY, (err, decodedToken) => {
 
-        jwt.verify(token, process.env.SECRETKEY, (err, decodedToken) => { 
-
-            if (err)
+            if (err) {
                 return res.status(400).send({ status: false, message: "Token is invalid" })
+            }
 
+            // setting userId in headers
             req.headers['loggedUser'] = decodedToken.user
 
             next();
@@ -47,30 +53,38 @@ const authentication = async function (req, res, next) {
 const authorisation = async function (req, res, next) {
 
     try {
-        loggedUser = req.headers["loggedUser"]
-        if (!loggedUser)
+        // getting userId from headers
+        let loggedUser = req.headers["loggedUser"]
+        if (!loggedUser) {
             return res.status(404).send({ status: false, message: "logged user not found" });
-
+        }
+        
+        // if authorId is given in req.params
         if (Object.keys(req.params).length != 0) {
             const blogId = req.params.blogId
             if (!mongoose.isValidObjectId(blogId)) {
                 return res.status(400).send({ status: false, message: "Provided format of blogId in param is invalid" })
             }
+
+            // checking blog is exists or not
             const findBlogAuthor = await blogModel.findOne({ _id: blogId })
             if (!findBlogAuthor) {
                 return res.status(404).send({ status: false, message: "blog not found" });
             }
 
+            // getting author from blog document
             const getAuthor = findBlogAuthor.authorId
             if (getAuthor != loggedUser) {
                 return res.status(403).send({ status: false, message: "You are not authorized" })
             }
         }
-        if(req.query.authorId){
-              if(req.query.authorId != loggedUser)
-              return res.status(403).send({status : false, message : "You are not authorized (q)"})
+
+        // if authorId is given in query param
+        if (req.query.authorId) {
+            if (req.query.authorId != loggedUser) {
+                return res.status(403).send({ status: false, message: "You are not authorized (q)" })
+            }
         }
-        
         next();
     }
     catch (err) {
@@ -78,4 +92,4 @@ const authorisation = async function (req, res, next) {
     }
 }
 
-module.exports = {authentication,authorisation}
+module.exports = { authentication, authorisation }

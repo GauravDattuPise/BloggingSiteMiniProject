@@ -53,6 +53,7 @@ const createAuthor = async (req, res) => {
         if (!validtion.pwValidation(password))
             return res.status(400).send({ status: false, message: "password should be look this - Pass123@" })
 
+            // author created and returned
         const createdAuth = await authorModel.create(data);
         return res.status(201).send({ status: true, data: createdAuth })
     }
@@ -86,6 +87,7 @@ const login = async function (req, res) {
 
         const token = jwt.sign({ user: findUser._id }, process.env.SECRETKEY);
 
+        console.log(process.env.SECRETKEY);
         return res.status(200).send({ status: true, data: token })
     }
     catch (err) {
