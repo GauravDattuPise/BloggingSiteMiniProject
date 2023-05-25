@@ -204,7 +204,7 @@ const deleteByQueryP = async function (req, res) {
         // adding isDeleted = false in data
         data.isDeleted = false
         const findBlog = await blogModel.updateMany(data, { $set: { isDeleted: true, deletedAt: Date.now() } })
-       
+       console.log(findBlog);
         const count = findBlog.modifiedCount
         // checking how many blogs are modified
         if (count != 0) {

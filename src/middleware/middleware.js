@@ -19,8 +19,6 @@ const authentication = async function (req, res, next) {
         // getting token from headers
         const token = req.headers['x-api-key'];
 
-        console.log(process.env.SECRETKEY);
-
         if (!token) {
             return res.status(400).send({ status: false, message: "Token is mandatory" });
         }
@@ -28,7 +26,7 @@ const authentication = async function (req, res, next) {
         jwt.verify(token, process.env.SECRETKEY, (err, decodedToken) => {
 
             if (err) {
-                return res.status(400).send({ status: false, message: "Token is invalid" })
+                return res.status(400).send({ status: false, message: err.message })
             }
 
             // setting userId in headers
@@ -58,7 +56,7 @@ const authorisation = async function (req, res, next) {
         if (!loggedUser) {
             return res.status(404).send({ status: false, message: "logged user not found" });
         }
-        
+
         // if authorId is given in req.params
         if (Object.keys(req.params).length != 0) {
             const blogId = req.params.blogId
@@ -85,6 +83,14 @@ const authorisation = async function (req, res, next) {
                 return res.status(403).send({ status: false, message: "You are not authorized (q)" })
             }
         }
+
+         // checking token's userID and authorId matching or not
+         if (req.body.authorId) {
+             if (req.body.authorId !== loggedUser) {
+                 return res.status(403).send({ status: false, message: "authorID and token's authorID not matching" })
+             }
+         }
+
         next();
     }
     catch (err) {

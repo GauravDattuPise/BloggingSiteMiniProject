@@ -2,7 +2,7 @@
 const jwt = require('jsonwebtoken')
 const authorModel = require('../models/authorModel');
 const validtion = require('../validation/validation')
- 
+
 const createAuthor = async (req, res) => {
 
     try {
@@ -42,7 +42,7 @@ const createAuthor = async (req, res) => {
         if (!validtion.emailValidation(email))
             return res.status(400).send({ status: false, message: "Email should be like this - abc123@gmail.com" })
 
-        let findEmail = await authorModel.findOne({ email  })
+        let findEmail = await authorModel.findOne({ email })
         if (findEmail)
             return res.status(400).send({ status: false, message: 'This email is already exists' })
 
@@ -53,7 +53,7 @@ const createAuthor = async (req, res) => {
         if (!validtion.pwValidation(password))
             return res.status(400).send({ status: false, message: "password should be look this - Pass123@" })
 
-            // author created and returned
+        // author created and returned
         const createdAuth = await authorModel.create(data);
         return res.status(201).send({ status: true, data: createdAuth })
     }
@@ -81,13 +81,14 @@ const login = async function (req, res) {
         if (!password)
             return res.status(400).send({ status: false, message: "Plese provide password" });
 
+        // finding user with email and password
         const findUser = await authorModel.findOne({ email: email, password: password });
         if (!findUser)
             return res.status(400).send({ status: false, message: "Email or password is incorrect" })
 
-        const token = jwt.sign({ user: findUser._id }, process.env.SECRETKEY);
+        // creating token
+        const token = jwt.sign({ user: findUser._id }, process.env.SECRETKEY, {expiresIn : "30m"});
 
-        console.log(process.env.SECRETKEY);
         return res.status(200).send({ status: true, data: token })
     }
     catch (err) {
@@ -95,4 +96,4 @@ const login = async function (req, res) {
     }
 }
 
-module.exports = {createAuthor, login}
+module.exports = { createAuthor, login }

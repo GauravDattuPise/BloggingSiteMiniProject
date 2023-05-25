@@ -13,7 +13,7 @@ router.post("/authors", createAuthor);
 router.post('/login',login)
 
 // CREATING BLOGS
-router.post('/blogs', authentication,createBlog)
+router.post('/blogs', authentication,authorisation,createBlog)
 
 // GET BLOGS
 router.get("/blogs", authentication,getBlogs)
